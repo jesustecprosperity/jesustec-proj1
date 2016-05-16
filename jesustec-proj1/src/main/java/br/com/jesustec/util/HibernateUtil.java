@@ -1,28 +1,37 @@
-
 package br.com.jesustec.util;
 
-import javax.validation.Configuration;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
 import org.hibernate.service.ServiceRegistry;
-
+import org.hibernate.service.ServiceRegistryBuilder;
 
 public class HibernateUtil {
-    
-    private static final SessionFactory sessionfactory;
-    
-    private static final HIBERNATE_SESSION = "hibernate_session";
-    
+
+    private static final SessionFactory sessionFactory;
+
+    public static final String HIBERNATE_SESSION = "hibernate_session";
+
     static {
         try {
-            System.out.println("Tentando abrir uma Session factory");
             
+            System.out.println("Tentando configurar a Session factory");   
             Configuration configuration = new Configuration().configure();
-            ServiceRegistry serviceregistry = new ServiceRegistry(); 
+            ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
+
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+
+            System.out.println("Session factory criada corretamente!");          
             
-            sessionfactory = configuration.buildSessionFactory(ServiceRegitry);
+        } catch (Exception ex) {
             
-        } catch (Exception e) {
+            System.out.println("Ocorreu um erro ao Iniciar a Session factory  = "+ex);
+            throw new ExceptionInInitializerError(ex);
+            
         }
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
     
 }
